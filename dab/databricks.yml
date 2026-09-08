@@ -1,0 +1,37 @@
+bundle:
+  name: realtime-ecommerce-lakehouse
+
+workspace:
+  host: https://dbc-86c13ef8-0f19.cloud.databricks.com
+
+resources:
+  jobs:
+    ecommerce_pipeline:
+      name: ecommerce_lakehouse_pipeline
+      tasks:
+        - task_key: bronze_ingestion
+          notebook_task:
+            notebook_path: ../notebooks/bronze/ingest_batch_source
+
+        - task_key: silver_transform
+          depends_on:
+            - task_key: bronze_ingestion
+          notebook_task:
+            notebook_path: ../notebooks/silver/transform_silver_tables
+
+        - task_key: gold_build
+          depends_on:
+            - task_key: silver_transform
+          notebook_task:
+            notebook_path: ../notebooks/gold/build_gold_tables
+
+        - task_key: streaming_ingest
+          depends_on:
+            - task_key: gold_build
+          notebook_task:
+            notebook_path: ../notebooks/streaming/ingest_streaming_source
+
+targets:
+  dev:
+    default: true
+    mode: development
