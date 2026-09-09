@@ -4,10 +4,16 @@ bundle:
 workspace:
   host: https://dbc-86c13ef8-0f19.cloud.databricks.com
 
+sync:
+  paths:
+    - ../notebooks
+    - .
+
 resources:
   jobs:
     ecommerce_pipeline:
       name: ecommerce_lakehouse_pipeline
+
       tasks:
         - task_key: bronze_ingestion
           notebook_task:
